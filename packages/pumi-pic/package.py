@@ -10,21 +10,25 @@ class PumiPic(CMakePackage, CudaPackage):
     git      = "https://github.com/SCOREC/pumi-pic"
     maintainers = ['Angelyr','jacobmerson','cwsmith']
 
+    version("master", branch="master")
+    version('2.1.4', commit='b6678b0a0b8c9ad1e143831bdc2920b944b0f5ff')
     version('2.1.3', commit='8130075d05f063413b8f637bcd9444a108e31f5b')
+
+    variant("cabana", default=True, description="Build with cabana")
 
     depends_on('mpi')
     depends_on("cxx", type="build")
     depends_on("cmake", type="build")
     depends_on("kokkos@4.2.00")
+    depends_on("omega-h@10.8.6-scorec +kokkos +cuda")
     depends_on("engpar")
-    depends_on("omega-h@10.8.6-scorec+kokkos")
-    depends_on("cabana@0.6.1")
+    depends_on("cabana@0.6.1 +mpi +cuda cuda_arch=86", when="+cabana")
 
     def cmake_args(self):
-        args = [
-            self.define("CMAKE_CXX_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicxx)),
-            self.define("ENABLE_CABANA", True)
-        ]
+        args = []
+        args.append("-DCMAKE_CXX_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicxx))
+        if "+cabana" in self.spec:
+            args.append("ENABLE_CABANA=ON")
         return args
 
 

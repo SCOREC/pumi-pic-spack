@@ -12,19 +12,18 @@ class Engpar(CMakePackage):
 
     version('master', branch='master')
 
-    depends_on("cxx", type="build")
     depends_on("c", type="build")
+    depends_on("cxx", type="build")
     depends_on("cmake", type="build")
     depends_on('mpi')
 
     def cmake_args(self):
-        args = [
-            self.define("CMAKE_CXX_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicxx)),
-            self.define("CMAKE_C_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicc)),
-            self.define("ENABLE_PARMETIS", False),
-            self.define("ENABLE_PUMI", False),
-            self.define("CMAKE_CXX_FLAGS", "-std=c++11")
-        ]
+        args = []
+        args.append("-DCMAKE_CXX_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicxx))
+        args.append("-DCMAKE_C_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicc))
+        args.append("ENABLE_PARMETIS=OFF")
+        args.append("ENABLE_PUMI=OFF")
+        args.append("CMAKE_CXX_FLAGS=-std=c++11")
         return args
 
 
