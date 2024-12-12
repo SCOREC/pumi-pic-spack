@@ -19,10 +19,10 @@ class PumiPic(CMakePackage, CudaPackage):
     depends_on('mpi')
     depends_on("cxx", type="build")
     depends_on("cmake", type="build")
-    
+
     depends_on("engpar")
     depends_on("kokkos@4.2.00")
-    depends_on("omega-h@10.8.6-scorec +kokkos")
+    depends_on("omega-h@10.8.6-scorec +mpi +kokkos")
     depends_on("cabana@0.6.1 +mpi", when="+cabana")
 
     for arch in CudaPackage.cuda_arch_values:
