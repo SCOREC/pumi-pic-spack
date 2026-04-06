@@ -46,7 +46,8 @@ class OpenmcPumi(CMakePackage):
     depends_on("cxx", type="build")  # generated
 
     depends_on("git", type="build")
-    depends_on("hdf5+hl~mpi")
+    # only supporting +mpi since hdf5 is also needed for cabana
+    depends_on("hdf5+hl+mpi")
     depends_on("pumi-tally@openmc", when='+pumitally')
     depends_on("dagmc +openmc", when='+dagmc')
 
@@ -54,12 +55,12 @@ class OpenmcPumi(CMakePackage):
         options = ["-DCMAKE_INSTALL_LIBDIR=lib"]  # forcing bc sometimes goes to lib64
         options += [self.define_from_variant("OPENMC_USE_PUMIPIC", "pumitally")]
 
-        use_newer_options = self.spec.satisfies("@0.13.1:")
-
-        if use_newer_options:
-            options += [self.define_from_variant("OPENMC_USE_OPENMP", "openmp")]
-        else:
-            options += [self.define_from_variant("openmp")]
+        options += [
+            "-DCMAKE_C_COMPILER=%s" % self.spec["mpi"].mpicc,
+            "-DCMAKE_CXX_COMPILER=%s" % self.spec["mpi"].mpicxx,
+        ]
+        options += [self.define("OPENMC_USE_MPI", True)]
+        options += [self.define_from_variant("OPENMC_USE_OPENMP", "openmp")]
 
         # Check dagmc availability
         if "+dagmc" in self.spec and not self.spec.satisfies("^dagmc"):

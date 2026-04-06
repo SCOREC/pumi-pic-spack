@@ -33,6 +33,7 @@ class PumiPic(CMakePackage, CudaPackage):
     depends_on("omega-h@11.0.0-scorec +kokkos")
     depends_on("omega-h@11.0.0-scorec +kokkos +shared", when="+shared")
     depends_on("cabana@0.6.1", when="+cabana")
+    depends_on("cabana@0.6.1", when="@pumitally")
     depends_on("cabana@0.6.1+shared", when="+cabana+shared")
 
     for arch in CudaPackage.cuda_arch_values:
