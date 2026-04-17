@@ -18,13 +18,12 @@ class PumiTally(CMakePackage, CudaPackage):
     depends_on("c", type="build")
     depends_on("cmake", type="build")
 
-    depends_on("pumi-pic@pumitally+shared")
+    depends_on("pumi-pic@pumitally")
 
     def cmake_args(self):
         args = []
         args.append("-DCMAKE_CXX_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicxx))
         args.append("-DCMAKE_C_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicc))
-        args.append("-DBUILD_SHARED_LIBS=ON")
         args.append("-DPUMITALLYOPENMC_ENABLE_TESTS=OFF")
 
         return args

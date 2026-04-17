@@ -12,8 +12,6 @@ class Engpar(CMakePackage):
 
     version('master', branch='master')
 
-    variant("shared", default=True, description="Enables the build of shared libraries")
-
     depends_on("c", type="build")
     depends_on("cxx", type="build")
     depends_on("cmake", type="build")
@@ -26,8 +24,7 @@ class Engpar(CMakePackage):
         args.append("ENABLE_PARMETIS=OFF")
         args.append("ENABLE_PUMI=OFF")
         args.append("CMAKE_CXX_FLAGS=-std=c++11")
-        if "+shared" in self.spec:
-            args.append("-DBUILD_SHARED_LIBS=ON")
+        args.append("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
         return args
 
 
