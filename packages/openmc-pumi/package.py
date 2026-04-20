@@ -10,7 +10,8 @@ from spack.package import *
 
 class OpenmcPumi(CMakePackage):
     """This is a fork of OpenMC (https://github.com/openmc-dev/openmc/) to
-    integrate PumiPIC based accelerated tally: Pumi-Tally.
+    integrate PumiPIC based accelerated tally: Pumi-Tally. It also supports
+    DAGMC for CAD geometry and unstructured mesh tally filters.
 
     OpenMC is a community-developed Monte Carlo neutron and photon transport
     simulation code. It is capable of performing fixed source, k-eigenvalue, and
@@ -20,16 +21,6 @@ class OpenmcPumi(CMakePackage):
     interaction data is based on a native HDF5 format that can be generated from ACE
     files produced by NJOY. Parallelism is enabled via a hybrid MPI and OpenMP
     programming model.
-
-    **IMPORTANT**: This package depends on the 'dagmc' package, which is not
-    provided by the default Spack repository. You MUST add the custom repository
-    from https://github.com/Fuad-HH/dagmc-spack to your Spack configuration
-    before installing this package:
-
-        spack repo add https://github.com/Fuad-HH/dagmc-spack.git
-
-    After adding the repository, the 'dagmc' package will be available as a
-    normal dependency.
     """
 
     homepage = "https://docs.openmc.org/"
@@ -66,23 +57,6 @@ class OpenmcPumi(CMakePackage):
         ]
         options += [self.define("OPENMC_USE_MPI", True)]
         options += [self.define_from_variant("OPENMC_USE_OPENMP", "openmp")]
-
-        # Check dagmc availability
-        if "+dagmc" in self.spec and not self.spec.satisfies("^dagmc"):
-        # This check will fail if the 'dagmc' package is not in the repository
-        # and Spack cannot find it when constructing the dependency graph.
-            try:
-                from spack.repo import PathRepository
-                from spack.repo import REPO_PATH
-                if 'dagmc' not in REPO_PATH:
-                    raise RuntimeError(
-                        "The 'dagmc' package is not available in any Spack repository.\n"
-                        "You need to add the custom repository from:\n"
-                        "  https://github.com/Fuad-HH/dagmc-spack\n"
-                        "Use: spack repo add https://github.com/Fuad-HH/dagmc-spack.git"
-                    )
-            except ImportError:
-                pass
         options += [self.define_from_variant("OPENMC_USE_DAGMC", "dagmc")]
 
         return options
