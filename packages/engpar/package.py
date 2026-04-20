@@ -12,6 +12,12 @@ class Engpar(CMakePackage):
 
     version('master', branch='master')
 
+    variant("pic", default=False, description="Build with position independent code (e.g., -fPIC)")
+    variant("shared", default=False, description="Build shared libraries")
+
+    conflicts("+pic", when="+shared")
+    conflicts("+shared", when="+pic")
+
     depends_on("c", type="build")
     depends_on("cxx", type="build")
     depends_on("cmake", type="build")
@@ -24,6 +30,10 @@ class Engpar(CMakePackage):
         args.append("ENABLE_PARMETIS=OFF")
         args.append("ENABLE_PUMI=OFF")
         args.append("CMAKE_CXX_FLAGS=-std=c++11")
+        if "+shared" in self.spec:
+            args.append("-DBUILD_SHARED_LIBS=ON")
+        if "+pic" in self.spec:
+            args.append("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
         return args
 
 
