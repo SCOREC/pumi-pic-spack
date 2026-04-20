@@ -48,7 +48,12 @@ class OpenmcPumi(CMakePackage):
     depends_on("git", type="build")
     # only supporting +mpi since hdf5 is also needed for cabana
     depends_on("hdf5+hl+mpi")
-    depends_on("pumi-tally@openmc", when='+pumitally')
+    depends_on("pumi-tally@openmc", when="+pumitally")
+    conflicts(
+        "^pumi-tally~pic~shared",
+        when="+pumitally",
+        msg="OpenMC always builds shared libraries; PUMI-Tally must be built with +pic or +shared",
+    )
     depends_on("dagmc +openmc", when='+dagmc')
 
     def cmake_args(self):

@@ -20,6 +20,11 @@ class PumiPic(CMakePackage, CudaPackage):
     )
 
     variant("cabana", default=True, description="Build with cabana")
+    variant("pic", default=False, description="Build with position independent code (-fPIC)")
+    variant("shared", default=False, description="Build shared libraries")
+
+    conflicts("+pic", when="+shared")
+    conflicts("+shared", when="+pic")
 
     depends_on('mpi')
     depends_on("cxx", type="build")
@@ -27,6 +32,17 @@ class PumiPic(CMakePackage, CudaPackage):
     depends_on("cmake", type="build")
 
     depends_on("engpar@master")
+    conflicts(
+        "^engpar~pic~shared",
+        when="+shared",
+        msg="PUMI-PiC builds shared or links into shared consumers; EnGPar must be built with +pic or +shared",
+    )
+    conflicts(
+        "^engpar~pic~shared",
+        when="+pic",
+        msg="PUMI-PiC builds shared or links into shared consumers; EnGPar must be built with +pic or +shared",
+    )
+    
     depends_on("kokkos@4.7.00")
     depends_on("omega-h@11.0.0-scorec +kokkos")
     depends_on("cabana@0.6.1", when="+cabana")
@@ -42,7 +58,10 @@ class PumiPic(CMakePackage, CudaPackage):
         args = []
         args.append("-DCMAKE_CXX_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicxx))
         args.append("-DCMAKE_C_COMPILER:FILEPATH={0}".format(self.spec["mpi"].mpicc))
-        args.append("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
+        if "+shared" in self.spec:
+            args.append("-DBUILD_SHARED_LIBS=ON")
+        elif "+pic" in self.spec:
+            args.append("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
         if "+cabana" in self.spec:
             args.append("-DENABLE_CABANA=ON")
         return args
